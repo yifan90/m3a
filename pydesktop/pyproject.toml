@@ -1,0 +1,53 @@
+[project]
+name = "pydesktop"
+version = "0.1.0"
+description = "Lightweight cross-platform desktop automation: screen capture, mouse, keyboard with multi-monitor support"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "yifan90"}
+]
+keywords = ["automation", "gui", "mouse", "keyboard", "screenshot"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Desktop Environment",
+]
+
+dependencies = [
+    "mss>=9.0.0",
+    "pynput>=1.7.6",
+    "Pillow>=9.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yifan90/pydesktop"
+Issues = "https://github.com/yifan90/pydesktop/issues"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pydesktop*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
