@@ -32,71 +32,78 @@ def _get_controller() -> "KeyboardController":
 
 
 # Map common key names to pynput Keys
-_KEY_MAP = {
+# Built dynamically to handle platform-specific keys that may not exist
+_KEY_MAP = {}
+
+
+def _build_key_map():
+    """Build the key map, safely handling platform-specific keys."""
+    if not HAS_PYNPUT:
+        return
+    
     # Modifier keys
-    "ctrl": Key.ctrl,
-    "control": Key.ctrl,
-    "alt": Key.alt,
-    "shift": Key.shift,
-    "meta": Key.cmd,
-    "win": Key.cmd,
-    "windows": Key.cmd,
-    "cmd": Key.cmd,
-    "command": Key.cmd,
-    "super": Key.cmd,
+    _KEY_MAP["ctrl"] = Key.ctrl
+    _KEY_MAP["control"] = Key.ctrl
+    _KEY_MAP["alt"] = Key.alt
+    _KEY_MAP["shift"] = Key.shift
+    _KEY_MAP["meta"] = Key.cmd
+    _KEY_MAP["win"] = Key.cmd
+    _KEY_MAP["windows"] = Key.cmd
+    _KEY_MAP["cmd"] = Key.cmd
+    _KEY_MAP["command"] = Key.cmd
+    _KEY_MAP["super"] = Key.cmd
     
     # Function keys
-    "f1": Key.f1,
-    "f2": Key.f2,
-    "f3": Key.f3,
-    "f4": Key.f4,
-    "f5": Key.f5,
-    "f6": Key.f6,
-    "f7": Key.f7,
-    "f8": Key.f8,
-    "f9": Key.f9,
-    "f10": Key.f10,
-    "f11": Key.f11,
-    "f12": Key.f12,
+    for i in range(1, 13):
+        _KEY_MAP[f"f{i}"] = getattr(Key, f"f{i}")
     
     # Special keys
-    "enter": Key.enter,
-    "return": Key.enter,
-    "tab": Key.tab,
-    "space": Key.space,
-    "backspace": Key.backspace,
-    "delete": Key.delete,
-    "del": Key.delete,
-    "escape": Key.esc,
-    "esc": Key.esc,
+    _KEY_MAP["enter"] = Key.enter
+    _KEY_MAP["return"] = Key.enter
+    _KEY_MAP["tab"] = Key.tab
+    _KEY_MAP["space"] = Key.space
+    _KEY_MAP["backspace"] = Key.backspace
+    _KEY_MAP["delete"] = Key.delete
+    _KEY_MAP["del"] = Key.delete
+    _KEY_MAP["escape"] = Key.esc
+    _KEY_MAP["esc"] = Key.esc
     
     # Navigation
-    "up": Key.up,
-    "down": Key.down,
-    "left": Key.left,
-    "right": Key.right,
-    "home": Key.home,
-    "end": Key.end,
-    "pageup": Key.page_up,
-    "page_up": Key.page_up,
-    "pagedown": Key.page_down,
-    "page_down": Key.page_down,
+    _KEY_MAP["up"] = Key.up
+    _KEY_MAP["down"] = Key.down
+    _KEY_MAP["left"] = Key.left
+    _KEY_MAP["right"] = Key.right
+    _KEY_MAP["home"] = Key.home
+    _KEY_MAP["end"] = Key.end
+    _KEY_MAP["pageup"] = Key.page_up
+    _KEY_MAP["page_up"] = Key.page_up
+    _KEY_MAP["pagedown"] = Key.page_down
+    _KEY_MAP["page_down"] = Key.page_down
     
-    # Lock keys
-    "capslock": Key.caps_lock,
-    "caps_lock": Key.caps_lock,
-    "numlock": Key.num_lock,
-    "num_lock": Key.num_lock,
-    "scrolllock": Key.scroll_lock,
-    "scroll_lock": Key.scroll_lock,
+    # Lock keys - caps_lock exists on all platforms
+    _KEY_MAP["capslock"] = Key.caps_lock
+    _KEY_MAP["caps_lock"] = Key.caps_lock
     
-    # Other
-    "insert": Key.insert,
-    "printscreen": Key.print_screen,
-    "print_screen": Key.print_screen,
-    "pause": Key.pause,
-    "menu": Key.menu,
-}
+    # Platform-specific keys - add only if they exist (some don't exist on macOS)
+    platform_specific_keys = [
+        ("numlock", "num_lock"),
+        ("num_lock", "num_lock"),
+        ("scrolllock", "scroll_lock"),
+        ("scroll_lock", "scroll_lock"),
+        ("insert", "insert"),
+        ("printscreen", "print_screen"),
+        ("print_screen", "print_screen"),
+        ("pause", "pause"),
+        ("menu", "menu"),
+    ]
+    for key_name, attr_name in platform_specific_keys:
+        if hasattr(Key, attr_name):
+            _KEY_MAP[key_name] = getattr(Key, attr_name)
+
+
+# Initialize the key map
+if HAS_PYNPUT:
+    _build_key_map()
 
 
 def _parse_key(key: str) -> Union["Key", "KeyCode"]:
